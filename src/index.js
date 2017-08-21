@@ -1,9 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-ReactDOM.render(
-  <div>
-    <h1>Hello</h1>
-  </div>,
-  document.getElementById('root')
+const items = ["Bread", "Milk", "Eggs", "Tea"];
+
+const listItems = [];
+
+for (let i = 0; i < items.length; i++) {
+  listItems.push(<li key={i}>{items[i]}</li>)
+};
+
+const List = props => (
+  <ul>
+    {props.items}
+  </ul>
 );
+
+ReactDOM.render(<List items={listItems}/>, document.getElementById('root'));
