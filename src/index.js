@@ -1,42 +1,56 @@
 import React, { Component } from "react";
 import ReactDOM from 'react-dom';
 import { createStore } from "redux";
+import { connect } from "react-redux";
+import { Provider } from "react-redux";
 
-const reducer = (state = 0, action) => {
+const initialState = {
+  count: 0
+};
+
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     case 'INCREMENT':
-    return state + 1;
+      return { ...state, count: state.count + 1 };
     case 'DECREMENT':
-    return state - 1;
+      return { ...state, count: state.count - 1 };
     case 'RESET':
-    return state = 0;
+      return { ...state, count: state.count = 0 };
     default:
-    return state;
+      return state;
+  }
+};
+
+const mapStateToProps = (state) => {
+  return {
+    count: state.count
   }
 }
 
-const store = createStore(reducer);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onIncrement: () => dispatch({type: 'INCREMENT'}),
+    onDecrement: () => dispatch({type: 'DECREMENT'}),
+    onReset: () => dispatch({type: 'RESET'})
+  }
+}
 
-const Counter = ({ value, onIncrement, onDecrement, onReset }) => (
+const Counter = ({ count, onIncrement, onDecrement, onReset }) => (
   <div>
-  <h1>{value}</h1>
-  <button onClick={onIncrement}>+</button>
-  <button onClick={onReset}>Reset</button>
-  <button onClick={onDecrement}>-</button>
+    <h1>{ count }</h1>
+    <button onClick={onIncrement}>+</button>
+    <button onClick={onReset}>Reset</button>
+    <button onClick={onDecrement}>-</button>
   </div>
 );
 
-const render = () => {
-  ReactDOM.render(
-    <Counter
-    value={ store.getState() }
-    onIncrement={ () => store.dispatch({ type: 'INCREMENT' }) }
-    onDecrement={ () => store.dispatch({ type: 'DECREMENT'}) }
-    onReset={ ()=> store.dispatch({ type: 'RESET'}) }
-    />,
-    document.getElementById('root')
-  );
-};
+const ConnectedCounter = connect(mapStateToProps, mapDispatchToProps)(Counter);
 
-render();
-store.subscribe(render)
+const store = createStore(reducer);
+
+ReactDOM.render(
+  <Provider store={store}>
+    <ConnectedCounter/>
+  </Provider>,
+  document.getElementById('root')
+);
