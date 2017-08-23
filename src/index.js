@@ -1,56 +1,22 @@
-import React, { Component } from "react";
-import ReactDOM from 'react-dom';
-import { createStore } from "redux";
-import { connect } from "react-redux";
-import { Provider } from "react-redux";
+import React from 'react';
+import { render } from 'react-dom';
+import { Home, Mine, Search } from './screens';
 
-const initialState = {
-  count: 0
-};
-
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case 'INCREMENT':
-      return { ...state, count: state.count + 1 };
-    case 'DECREMENT':
-      return { ...state, count: state.count - 1 };
-    case 'RESET':
-      return { ...state, count: state.count = 0 };
+const Index = ({ pathname }) => {
+  switch(pathname) {
+    case "/search":
+      return <Search />;
+    case "/mine":
+      return <Mine />;
     default:
-      return state;
+      return <Home />;
   }
 };
 
-const mapStateToProps = (state) => {
-  return {
-    count: state.count
-  }
-}
+let pathname = window.location.pathname;
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onIncrement: () => dispatch({type: 'INCREMENT'}),
-    onDecrement: () => dispatch({type: 'DECREMENT'}),
-    onReset: () => dispatch({type: 'RESET'})
-  }
-}
+render(<Index pathname={pathname} />, document.getElementById("root"));
 
-const Counter = ({ count, onIncrement, onDecrement, onReset }) => (
-  <div>
-    <h1>{ count }</h1>
-    <button onClick={onIncrement}>+</button>
-    <button onClick={onReset}>Reset</button>
-    <button onClick={onDecrement}>-</button>
-  </div>
-);
-
-const ConnectedCounter = connect(mapStateToProps, mapDispatchToProps)(Counter);
-
-const store = createStore(reducer);
-
-ReactDOM.render(
-  <Provider store={store}>
-    <ConnectedCounter/>
-  </Provider>,
-  document.getElementById('root')
-);
+ window.addEventListener("popstate", () => {
+  pathname = window.location.pathname;
+});
