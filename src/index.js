@@ -1,35 +1,48 @@
 import React from 'react';
-import { render } from 'react-dom';
-import { Home, Mine, Search } from './screens';
+import ReactDOM from 'react-dom';
+import * as ReactRedux from 'react-redux'
+import * as Redux from 'redux';
+const { Provider } = ReactRedux;
 
-const route = (WrappedComponent, routes) => {
-  return class extends React.Component {
-    render() {
-      const ComponentForPathname = routes[this.props.pathname];
-      return (
-        <WrappedComponent>
-          <ComponentForPathname {...this.props} />
-        </WrappedComponent>
-      );
+// The application state is just a string that is either 'not started',
+// 'started', or 'completed'
+const reducer = (state = 'not started', action) => {
+    switch(action.type) {
+      case 'STARTED':
+        return 'started';
+      case 'COMPLETED':
+        return 'completed';
     }
-  };
+    return state;
+}
+
+const store = Redux.createStore(reducer);
+
+// This component displays the current status and provides a button to
+// start an async process that will dispatch back to Redux
+let StatusDisplay = (props) => {
+    return (
+      <div>
+        <p>{props.status}</p>
+        <button onClick={waitTwoSecondsThenDispatch}>Start dispatch</button>
+      </div>
+    );
 };
 
-const Root = props =>
-  <div>
-    {props.children}
-  </div>;
+// This is our asynchronous process that dispatches immediately,
+// and then again when complete
+const waitTwoSecondsThenDispatch = () => {
+  store.dispatch({ type: 'STARTED' });
+  setTimeout(() => store.dispatch({ type: 'COMPLETED' }), 2000);
+}
 
-const Router = route(Root, {
-  "/": Home,
-  "/search": Search,
-  "/mine": Mine
-});
+const mapStateToProps = state => ({ status: state });
 
-let pathname = window.location.pathname;
+StatusDisplay = ReactRedux.connect(mapStateToProps)(StatusDisplay);
 
-render(<Router pathname={pathname} />, document.getElementById("root"));
-
-window.addEventListener("popstate", () => {
-  pathname = window.location.pathname;
-});
+ReactDOM.render(
+  <Provider store={store}>
+    <StatusDisplay />
+  </Provider>,
+  document.getElementById('root')
+);
