@@ -1,48 +1,28 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import * as ReactRedux from 'react-redux'
-import * as Redux from 'redux';
-const { Provider } = ReactRedux;
+import { Component } from 'react';
+import { render } from 'react-dom';
 
-// The application state is just a string that is either 'not started',
-// 'started', or 'completed'
-const reducer = (state = 'not started', action) => {
-    switch(action.type) {
-      case 'STARTED':
-        return 'started';
-      case 'COMPLETED':
-        return 'completed';
-    }
-    return state;
+let Heads = function(results) {
+    return results.filter(face => face == "H").length;
 }
 
-const store = Redux.createStore(reducer);
+let Tails = function(results) {
+    return results.filter(face => face == "T").length;
+}
 
-// This component displays the current status and provides a button to
-// start an async process that will dispatch back to Redux
-let StatusDisplay = (props) => {
+class CoinFlip extends Component {
+  state = {
+    results: ["T", "H", "H", "T", "H", "T", "T"]
+  }
+  render() {
     return (
       <div>
-        <p>{props.status}</p>
-        <button onClick={waitTwoSecondsThenDispatch}>Start dispatch</button>
+        <p>Heads: {Heads(this.state.results)}</p>
+        <p>Tails: {Tails(this.state.results)}</p>
       </div>
-    );
-};
-
-// This is our asynchronous process that dispatches immediately,
-// and then again when complete
-const waitTwoSecondsThenDispatch = () => {
-  store.dispatch({ type: 'STARTED' });
-  setTimeout(() => store.dispatch({ type: 'COMPLETED' }), 2000);
+    )
+  }
 }
 
-const mapStateToProps = state => ({ status: state });
 
-StatusDisplay = ReactRedux.connect(mapStateToProps)(StatusDisplay);
-
-ReactDOM.render(
-  <Provider store={store}>
-    <StatusDisplay />
-  </Provider>,
-  document.getElementById('root')
-);
+render(<CoinFlip />, document.getElementById('root'));
