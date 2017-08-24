@@ -1,28 +1,22 @@
-import React from 'react';
-import { Component } from 'react';
-import { render } from 'react-dom';
+import React from "react";
+import { Component } from "react";
+import ReactDOM from "react-dom";
+import { render } from "react-dom";
+import { tailsSelector, headsSelector} from "./selectors";
+import { connect } from "react-redux";
 
-let Heads = function(results) {
-    return results.filter(face => face == "H").length;
-}
+const Results = (props) => (
+  <div>
+      <p>Heads: {props.heads}</p>
+      <p>Tails: {props.tails}</p>
+  </div>
+);
 
-let Tails = function(results) {
-    return results.filter(face => face == "T").length;
-}
+const mapStateToProps = state => ({
+  heads: headsSelector(state),
+  tails: tailsSelector(state)
+});
 
-class CoinFlip extends Component {
-  state = {
-    results: ["T", "H", "H", "T", "H", "T", "T"]
-  }
-  render() {
-    return (
-      <div>
-        <p>Heads: {Heads(this.state.results)}</p>
-        <p>Tails: {Tails(this.state.results)}</p>
-      </div>
-    )
-  }
-}
+export default connect(mapStateToProps, null)(Results);
 
-
-render(<CoinFlip />, document.getElementById('root'));
+// render(<Results() />, document.getElementById('root'));
